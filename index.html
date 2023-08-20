@@ -1,17 +1,65 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="./dist/output.css">
     </head>
     <body>
-        <canvas id="myCanvas">
-        </canvas>
-        <div class="flex h-10 w-full">
-            <div style="background-color: cornflowerblue;" data-colour="cornflowerblue"></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
+        <div class="flex">
+            <div class="bg-gray-400 w-1/6 flex justify-center py-4">
+                <div class="flex flex-col space-y-6">
+                    <h3 class="font-bold text-lg underline">Simulation Settings:</h3>
+                    <div class="w-fit flex flex-col">
+                        <!-- Label for stepRange-->
+                        <label for="stepRange">Simulation Speed:</label>
+                        <input type="range" min="1" max="10" value="5" class="slider" id="stepRange">                        
+                    </div>
+                    <div class="w-fit">
+                        <!-- play button-->
+                        <button id="play" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <svg class="inline-block h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path fill="white" d="M5 3l14 9-14 9V3z" />
+                            </svg>
+                        </button>
+                        <!-- pause button-->
+                        <button id="pause" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <svg class="inline-block h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path fill="white" d="M6 4h3v16H6V4zM15 4h3v16h-3V4z" />
+                            </svg>
+                        </button>
+                        <!-- reset button-->
+                        <button id="reset" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <svg class="inline-block h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path fill="white" d="M3 3h18v18H3V3z" />
+                                <path fill="white" d="M7 7h10v10H7V7z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="w-fit">
+                        <!-- input for creating configs -->
+                        <form action="" id="addConfigForm" class="flex flex-col">
+                            <label for="addConfig">Pattern:</label>
+                            <select name="addConfig" id="addConfig">
+                                <option value="singleCell">Cell</option>
+                                <option value="glider">Glider</option>
+                                <option value="gliderGun">Glider Gun</option>
+                                <option value="pulsar">Pulsar</option>
+                                <option value="random">Random</option>
+                            </select>
+                        </form>
+                    </div>
+                    <div class="text-sm max-h-10">
+                        <!-- the rules -->
+                        <h3 class="font-bold text-lg underline">Rules:</h3>
+                        <ul class="list-disc">
+                            <li>Any live cell with fewer than two live neighbours dies, as if by underpopulation.</li>
+                            <li>Any live cell with two or three live neighbours lives on to the next generation.</li>
+                            <li>Any live cell with more than three live neighbours dies, as if by overpopulation.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <canvas id="myCanvas">
+            </canvas>
         </div>
     </body>
     <script src="index.js" type="module">

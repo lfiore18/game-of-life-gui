@@ -1,7 +1,6 @@
 // Any live cell with two or three live neighbours survives.
 // Any dead cell with three live neighbours becomes a live cell.
 // All other live cells die in the next generation. Similarly, all other dead cells stay dead.
-
 export class Board {
     boardState = [];
 
@@ -16,7 +15,7 @@ export class Board {
                 this.boardState[x][y] = false;
             }
         }
-
+        
         console.log("Board has been created");
     }
 
@@ -28,11 +27,16 @@ export class Board {
     }
 
     SetPosition(x, y, isAlive) {
-        this.boardState[x][y] = isAlive;
+        if (this.GetPosition(x, y) != isAlive)
+            this.boardState[x][y] = isAlive;
+
+
+        console.log("Position " + x + ", " + y + " is now " + isAlive);
     }
 
     SetConfig(x, y) {
         this.SetPosition(x, y, true);
+        this.SetPosition(x, y + 1, true);
         this.SetPosition(x + 1, y, true);
         this.SetPosition(x - 1, y, true);
     }
@@ -42,15 +46,19 @@ export class Board {
         let nextState = this.CalculateNextBoardState();
 
         for (let i = 0; i < nextState.length; i++) {
-            this.SetPosition(nextState[i][0], nextState[i][1], nextState[i][2]);
+            this.SetPosition(
+                nextState[i][0], 
+                nextState[i][1], 
+                nextState[i][2]
+            );
         }
     }
 
     // Determine the next board state
     CalculateNextBoardState() {
         let stateChange = [];
-        let cols = this.boardState.length;
-        let rows = this.boardState[0].length;
+        let cols = this.Width();
+        let rows = this.Height();
 
         // Check each cell on the board to see if it's occupied
         for (let x = 0; x < cols; x++) {
@@ -64,6 +72,9 @@ export class Board {
                 else if (this.GetPosition(x, y) && (neighbours > 3 || neighbours < 2)) {
                     stateChange.push([x, y, false]);
                 }
+
+                if (x == 79 && y == 17)
+                    console.log("Neighbours: " + neighbours);
             }
         }
         
@@ -89,7 +100,6 @@ export class Board {
                 // Skip the cell at the co-ordinates given in the arguments
                 if ((x != column || y != row) && this.boardState[x][y] == true) {
                     neighbours++;
-                    //console.log(neighbours);
                 }
             }
         }

@@ -42,18 +42,23 @@ export class BoardRenderer {
         for (let x = 0; x < this.cols; x++) {
             for (let y = 0; y < this.rows; y++) {
                 if (board.GetPosition(x, y)) {
-                    this.DrawCell(x * this.cellDimensionPx, y * this.cellDimensionPx);
+                    this.DrawCell(x, y);
                 }
             }
         }
     }
 
-    DrawCell(x, y) {
-       this.ctx.fillStyle = "#fff";
+    DrawCell(x, y, isGhostCell = false) {
+
+        // If the cell is a ghost cell, draw it with a different color
+        if (isGhostCell)
+            this.ctx.fillStyle = "#a5a5a5";
+        else
+            this.ctx.fillStyle = "#fff";
 
         // x, y is where the top-left corner of the cell will be positioned
         // dotSize will dictate the width/height of the cell, originating from the x/y
-       this.ctx.fillRect(x, y, this.cellDimensionPx, this.cellDimensionPx);
+       this.ctx.fillRect(x * this.cellDimensionPx, y * this.cellDimensionPx, this.cellDimensionPx, this.cellDimensionPx);
     }
 
     DrawBoard() {
@@ -61,16 +66,14 @@ export class BoardRenderer {
         this.ctx.fillStyle = "#000";
         this.ctx.fillRect(0, 0, this.boardWidth, this.boardHeight);
 
-        // Draw the vertical lines
+        // Draw the board lines
         for (let i = 1; i < this.cols; i++) {
+            // Vertical lines
             this.DrawLine(i * this.cellDimensionPx, 0, i * this.cellDimensionPx, this.boardWidth, 2);
+            
+            // Horizontal lines
+            this.DrawLine(0, i * this.cellDimensionPx, this.boardWidth, i * this.cellDimensionPx, 2);
             //console.log(`Drawing vertical line ${i}`);
-        }
-
-        // Draw the horizontal lines
-        for (let i = 1; i < this.rows; i++) {
-            this.DrawLine(0, i * this.cellDimensionPx, this.boardHeight, i * this.cellDimensionPx, 2);
-            //console.log(`Drawing horizontal line ${i}`);
         }
 
         //this.ctx.save();
