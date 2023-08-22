@@ -1,4 +1,4 @@
-Game Of Life (GUI)
+#Game Of Life (GUI)
 A Javascript/HTML canvas implementation of Conway's "Game of Life." I took code that I wrote for a technical interview and adapted it into a fully realised version of Conway's "Game of Life."
 
 #Features
