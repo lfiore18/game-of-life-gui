@@ -120,7 +120,9 @@ function SingleCell(e, isGhost = false) {
 function DrawGlider(cellX, cellY, isGhost = false) {
     // Create an array of positions to pass to the config drawer
     let positions = [   
-        [cellX, cellY], [cellX + 1, cellY], [cellX + 2, cellY]
+        // draw glider
+        [cellX, cellY], [cellX + 1, cellY], [cellX + 2, cellY],
+        [cellX + 2, cellY - 1], [cellX + 1, cellY - 2]
     ];
 
     DrawConfig(positions, isGhost);
