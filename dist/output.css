@@ -563,14 +563,6 @@ video {
   width: fit-content;
 }
 
-.w-10 {
-  width: 2.5rem;
-}
-
-.list-inside {
-  list-style-position: inside;
-}
-
 .list-disc {
   list-style-type: disc;
 }
