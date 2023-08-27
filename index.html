@@ -47,15 +47,22 @@
                             </select>
                         </form>
                     </div>
-                    <div class="text-sm w-32">
-                        <!-- the rules -->
+                    <div class="text-lg">   
+                        <h3 class="font-bold text-lg underline">Generation: <span id="generation">0</span></h3>
+                    </div>
+                    <!-- current rotation -->
+                    <div class="text-lg">
+                        <h3 class="font-bold text-lg underline">Rotation: <span id="rotation">0</span></h3>
+                    </div>
+
+                    <!-- <div class="text-sm w-32">
                         <h3 class="font-bold text-lg underline">Rules:</h3>
                         <ul class="list-disc">
                             <li>Any live cell with fewer than two live neighbours dies, as if by underpopulation.</li>
                             <li>Any live cell with two or three live neighbours lives on to the next generation.</li>
                             <li>Any live cell with more than three live neighbours dies, as if by overpopulation.</li>
                         </ul>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <canvas id="myCanvas">

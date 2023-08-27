@@ -4,18 +4,25 @@ import { Board } from "./modules/boardState.mjs";
 let start, previousTimeStamp;
 
 const canvas = document.querySelector("#myCanvas");
-
 const ctx    = canvas.getContext("2d");
+const rotationText = document.querySelector("#rotation");
+
 
 let board = new Board(90, 50);
 const boardRenderer = new BoardRenderer(board, canvas, ctx, 12);
 
+// Set the max step length to 2 seconds
 const maxStepLengthInMs = 2000;
 
+// Set the step length to 1/5 of the max step length
 let stepLengthInMs = maxStepLengthInMs / 5;
 let isPlaying = false;
 
+// Set the current config to singleCell by default
 let addingCurrentConfig = "singleCell";
+
+// Store the current rotation of the config
+let currentConfigOrientation = 0;
 
 
 //TODO: There's a bug where any config placed to the right of column 50 will not play by the rules
@@ -37,11 +44,11 @@ document.querySelector("#pause").addEventListener("click", (e) => {
     isPlaying = false;
 });
 
-document.querySelector("#reset").addEventListener("click", reset);
+document.querySelector("#reset").addEventListener("click", Reset);
 
 
-canvas.addEventListener("click", placeCell);
-canvas.addEventListener("mousemove", ghostCell);
+canvas.addEventListener("click", PlaceCell);
+canvas.addEventListener("mousemove", GhostCell);
 
 
 // Get the currently selected config from the "select" element
@@ -68,7 +75,53 @@ document.querySelector("#addConfig").addEventListener("click", (e) => {
     }
 });
 
-function reset() {
+// listen for E keypress to rotate the current config
+document.addEventListener("keydown", (e) => {
+    if (e.key === "r") {
+        currentConfigOrientation += 90;
+        if (currentConfigOrientation >= 360) {
+            currentConfigOrientation = 0;
+        }
+        console.log(currentConfigOrientation);
+    }
+
+    UpdateRotationText();
+});
+
+// listen for R keypress to rotate the current config the opposite way
+document.addEventListener("keydown", (e) => {
+    if (e.key === "e") {
+        currentConfigOrientation -= 90;
+        if (currentConfigOrientation < 0) {
+            currentConfigOrientation = 270;
+        }
+        console.log(currentConfigOrientation);
+    }
+
+    UpdateRotationText();
+});
+
+function UpdateRotationText() {
+    // add the degree symbol to the rotation text
+    let degreeSymbol = String.fromCharCode(176);
+
+    let orientationText = "";
+
+    switch (currentConfigOrientation) {
+        case 90:
+            orientationText = "270";
+            break;
+        case 270:
+            orientationText = "90";
+            break;
+        default:
+            orientationText = currentConfigOrientation.toString();
+            break;
+    }
+
+    rotationText.innerHTML = `${orientationText}${degreeSymbol}`;
+}
+function Reset() {
     console.log("Resetting board");
     board = null;
     board = new Board(90, 50);
@@ -77,7 +130,7 @@ function reset() {
 }
 
 
-function ghostCell(e) {
+function GhostCell(e) {
     console.log("ghosting");
 
     // Update the board to remove the previous ghosted image
@@ -85,12 +138,12 @@ function ghostCell(e) {
     SingleCell(e, true);
 }
 
-function placeCell(e) {
+function PlaceCell(e) {
     SingleCell(e, false);
     boardRenderer.UpdateBoard(board);
 }
 
-// create function for placeCell and ghostCell to use with appropriate name
+// create function for PlaceCell and GhostCell to use with appropriate name
 function SingleCell(e, isGhost = false) {
     let rect = canvas.getBoundingClientRect();
     let x = e.clientX - rect.left;
@@ -119,40 +172,46 @@ function SingleCell(e, isGhost = false) {
 
 function DrawGlider(cellX, cellY, isGhost = false) {
     // Create an array of positions to pass to the config drawer
-    let positions = [   
+    let matrix = [   
         // draw glider
-        [cellX, cellY], [cellX + 1, cellY], [cellX + 2, cellY],
-        [cellX + 2, cellY - 1], [cellX + 1, cellY - 2]
+        [0, 0], [1, 0], [2, 0],
+        [2, -1], [1, -2]
     ];
+
+    let positions = AddTransforms(cellX, cellY, matrix);
 
     DrawConfig(positions, isGhost);
 }
 
 function DrawThing(cellX, cellY, isGhost = false){
-    let x = cellX;
-    let y = cellY;
 
-    let positions = [
-        [cellX, cellY], [cellX, cellY - 1], [cellX, cellY - 2]
-    ]
+    let matrix = [
+        [0, 0], [1, 0], [2, 0]
+    ];
+
+    let positions = AddTransforms(cellX, cellY, matrix);
 
     DrawConfig(positions, isGhost);
 }
 
 
 function DrawGliderGun(cellX, cellY, isGhost = false) {
-    // Create an array of the  positions to pass to the config drawer
-    let positions = [
-        [cellX, cellY], [cellX + 1, cellY], [cellX, cellY + 1], [cellX + 1, cellY + 1],
-        [cellX + 10, cellY], [cellX + 10, cellY + 1], [cellX + 10, cellY + 2], [cellX + 11, cellY - 1],
-        [cellX + 11, cellY + 3], [cellX + 12, cellY - 2], [cellX + 12, cellY + 4], [cellX + 13, cellY - 2],
-        [cellX + 13, cellY + 4], [cellX + 14, cellY + 1], [cellX + 15, cellY - 1], [cellX + 15, cellY + 3],
-        [cellX + 16, cellY], [cellX + 16, cellY + 1], [cellX + 16, cellY + 2], [cellX + 17, cellY + 1], [cellX + 20, cellY - 2],
-        [cellX + 20, cellY - 1], [cellX + 20, cellY], [cellX + 21, cellY - 2], [cellX + 21, cellY - 1],
-        [cellX + 21, cellY], [cellX + 22, cellY - 3], [cellX + 22, cellY + 1], [cellX + 24, cellY - 4],
-        [cellX + 24, cellY - 3], [cellX + 24, cellY + 1], [cellX + 24, cellY + 2], [cellX + 34, cellY - 2],
-        [cellX + 34, cellY - 1], [cellX + 35, cellY - 2], [cellX + 35, cellY - 1]
+    // using positions[] below, create an array of just the additions and subtractions to the cellX and cellY values
+    // then loop through the array and add the cellX and cellY values to each element
+    
+    let matrix = [
+        [0, 0], [1, 0], [0, 1], [1, 1],
+        [10, 0], [10, 1], [10, 2], [11, -1],
+        [11, 3], [12, -2], [12, 4], [13, -2],
+        [13, 4], [14, 1], [15, -1], [15, 3],
+        [16, 0], [16, 1], [16, 2], [17, 1], [20, -2],
+        [20, -1], [20, 0], [21, -2], [21, -1],
+        [21, 0], [22, -3], [22, 1], [24, -4],
+        [24, -3], [24, 1], [24, 2], [34, -2],
+        [34, -1], [35, -2], [35, -1]
     ];
+
+    let positions = AddTransforms(cellX, cellY, matrix);
 
     DrawConfig(positions, isGhost);
 }
@@ -164,6 +223,34 @@ function DrawCell(cellX, cellY, isGhost = false) {
         board.SetPosition(cellX, cellY, true);
 }
 
+
+// Takes a matrix of positions and adds the cellX and cellY values to each element, 
+// depending on the current rotation of the config
+function AddTransforms(cellX, cellY, transformMatrix) {
+    let positions = [];
+    
+    for (let i = 0; i < transformMatrix.length; i++) {
+        switch (currentConfigOrientation) {
+            case 0:
+                positions.push([cellX + transformMatrix[i][0], cellY + transformMatrix[i][1]]);
+                break;
+            case 90:
+                positions.push([cellX + transformMatrix[i][1], cellY + transformMatrix[i][0]]);
+                break;
+            case 180:
+                positions.push([cellX - transformMatrix[i][0], cellY - transformMatrix[i][1]]);
+                break;
+            case 270:
+                positions.push([cellX - transformMatrix[i][1], cellY - transformMatrix[i][0]]);
+                break;
+            default:
+                break;
+        }
+    }
+
+    return positions;
+}
+
 function DrawConfig(positions, isGhost = false) {
     for (let i = 0; i < positions.length; i++) {
         if (isGhost)
@@ -173,7 +260,7 @@ function DrawConfig(positions, isGhost = false) {
     }
 }
 
-function runGame(timeStamp) {
+function RunGame(timeStamp) {
     if (isPlaying) {
         // At the beginning, take a timestamp
         if (previousTimeStamp === undefined)
@@ -191,8 +278,8 @@ function runGame(timeStamp) {
             boardRenderer.UpdateBoard(board);
         }
     }
-    window.requestAnimationFrame(runGame);    
+    window.requestAnimationFrame(RunGame);    
 }
 
-window.requestAnimationFrame(runGame);
+window.requestAnimationFrame(RunGame);
 
