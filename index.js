@@ -3,12 +3,12 @@ import { Board } from "./modules/boardState.mjs";
 
 let start, previousTimeStamp;
 
-const canvas = document.querySelector("#myCanvas");
-const ctx    = canvas.getContext("2d");
-const rotationText = document.querySelector("#rotation");
+const canvas         = document.querySelector("#myCanvas");
+const ctx            = canvas.getContext("2d");
+const rotationText   = document.querySelector("#rotation");
+const generationText = document.querySelector("#generation");
 
-
-let board = new Board(90, 50);
+let board = new Board(90, 90);
 const boardRenderer = new BoardRenderer(board, canvas, ctx, 12);
 
 // Set the max step length to 2 seconds
@@ -45,7 +45,6 @@ document.querySelector("#pause").addEventListener("click", (e) => {
 });
 
 document.querySelector("#reset").addEventListener("click", Reset);
-
 
 canvas.addEventListener("click", PlaceCell);
 canvas.addEventListener("mousemove", GhostCell);
@@ -101,6 +100,7 @@ document.addEventListener("keydown", (e) => {
     UpdateRotationText();
 });
 
+
 function UpdateRotationText() {
     // add the degree symbol to the rotation text
     let degreeSymbol = String.fromCharCode(176);
@@ -121,11 +121,14 @@ function UpdateRotationText() {
 
     rotationText.innerHTML = `${orientationText}${degreeSymbol}`;
 }
+
+
 function Reset() {
     console.log("Resetting board");
     board = null;
     board = new Board(90, 50);
     isPlaying = false;
+    generationText.textContent = board.generation;
     boardRenderer.UpdateBoard(board);
 }
 
@@ -138,10 +141,12 @@ function GhostCell(e) {
     SingleCell(e, true);
 }
 
+
 function PlaceCell(e) {
     SingleCell(e, false);
     boardRenderer.UpdateBoard(board);
 }
+
 
 // create function for PlaceCell and GhostCell to use with appropriate name
 function SingleCell(e, isGhost = false) {
@@ -170,6 +175,7 @@ function SingleCell(e, isGhost = false) {
     }
 }
 
+
 function DrawGlider(cellX, cellY, isGhost = false) {
     // Create an array of positions to pass to the config drawer
     let matrix = [   
@@ -182,6 +188,7 @@ function DrawGlider(cellX, cellY, isGhost = false) {
 
     DrawConfig(positions, isGhost);
 }
+
 
 function DrawThing(cellX, cellY, isGhost = false){
 
@@ -215,6 +222,7 @@ function DrawGliderGun(cellX, cellY, isGhost = false) {
 
     DrawConfig(positions, isGhost);
 }
+
 
 function DrawCell(cellX, cellY, isGhost = false) {
     if (isGhost)
@@ -251,6 +259,7 @@ function AddTransforms(cellX, cellY, transformMatrix) {
     return positions;
 }
 
+
 function DrawConfig(positions, isGhost = false) {
     for (let i = 0; i < positions.length; i++) {
         if (isGhost)
@@ -259,6 +268,7 @@ function DrawConfig(positions, isGhost = false) {
             board.SetPosition(positions[i][0], positions[i][1], true);
     }
 }
+
 
 function RunGame(timeStamp) {
     if (isPlaying) {
@@ -272,10 +282,10 @@ function RunGame(timeStamp) {
 
         if (elapsed > stepLengthInMs) 
         {
-            console.log("Step");
             previousTimeStamp = timeStamp;
             board.MutateBoard();
             boardRenderer.UpdateBoard(board);
+            generationText.textContent = board.generation;
         }
     }
     window.requestAnimationFrame(RunGame);    

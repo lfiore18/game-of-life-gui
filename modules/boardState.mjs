@@ -3,6 +3,7 @@
 // All other live cells die in the next generation. Similarly, all other dead cells stay dead.
 export class Board {
     boardState = [];
+    generation = 0;
 
     constructor(cols, rows) {
         // Define a multidemensional array to store the boardState
@@ -52,6 +53,8 @@ export class Board {
                 nextState[i][2]
             );
         }
+
+        this.generation++;
     }
 
     // Determine the next board state
