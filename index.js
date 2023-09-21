@@ -12,7 +12,7 @@ let board = new Board(90, 90);
 const boardRenderer = new BoardRenderer(board, canvas, ctx, 12);
 
 // Set the max step length to 2 seconds
-const maxStepLengthInMs = 2000;
+const maxStepLengthInMs = 1000;
 
 // Set the step length to 1/5 of the max step length
 let stepLengthInMs = maxStepLengthInMs / 5;
@@ -66,6 +66,9 @@ document.querySelector("#addConfig").addEventListener("click", (e) => {
             break;
         case "pulsar":
             addingCurrentConfig = "pulsar";
+            break;
+        case "acorn":
+            addingCurrentConfig = "acorn";
             break;
         case "singleCell":
         default:
@@ -168,6 +171,9 @@ function SingleCell(e, isGhost = false) {
         case "pulsar":
             DrawThing(cellX, cellY, isGhost);
             break;
+        case "acorn":
+            DrawAcorn(cellX, cellY, isGhost);
+            break;
         case "singleCell":
         default:
             DrawCell(cellX, cellY, isGhost);
@@ -201,6 +207,19 @@ function DrawThing(cellX, cellY, isGhost = false){
     DrawConfig(positions, isGhost);
 }
 
+function DrawAcorn(cellX, cellY, isGhost = false) {
+    // using positions[] below, create an array of just the additions and subtractions to the cellX and cellY values
+    // then loop through the array and add the cellX and cellY values to each element
+    
+    let matrix = [
+        [0, 0], [1, 0], [4, 0], [5, 0], [6, 0],
+        [3, -1], [1, -2]
+    ];
+
+    let positions = AddTransforms(cellX, cellY, matrix);
+
+    DrawConfig(positions, isGhost);
+}
 
 function DrawGliderGun(cellX, cellY, isGhost = false) {
     // using positions[] below, create an array of just the additions and subtractions to the cellX and cellY values
