@@ -129,7 +129,7 @@ function UpdateRotationText() {
 function Reset() {
     console.log("Resetting board");
     board = null;
-    board = new Board(90, 50);
+    board = new Board(90, 90);
     isPlaying = false;
     generationText.textContent = board.generation;
     boardRenderer.UpdateBoard(board);
